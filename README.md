@@ -1,260 +1,522 @@
-# AI FitTrack API 🏋️‍♂️🤖
+🏋️ FitSense AI 🤖
+Personalized Fitness Recommendations Powered by AI
 
-AI FitTrack API is a robust, production-ready backend application built using **Node.js, Express.js, MongoDB (Mongoose), JWT Authentication, bcrypt**, and the **Google Gemini AI SDK**. 
+FitSense AI is an AI-powered fitness tracking and recommendation system developed as part of the Naan Mudhalvan Project.
 
-It enables users to register, authenticate securely, log their daily fitness and workout activities, query workouts via keyword or date, and request personalized AI workout plans or progress insights directly from Google Gemini AI.
+The application combines Node.js, Express.js, MongoDB, JWT Authentication, bcrypt, and Google Gemini AI to provide secure workout management, personalized workout recommendations, and AI-powered fitness insights.
 
----
+📌 Project Overview
 
-## 🎨 Tech Stack
-- **Runtime Environment:** Node.js
-- **Framework:** Express.js
-- **Database:** MongoDB Atlas (via Mongoose ODM)
-- **AI Integration:** Google Gemini SDK (`@google/genai` v2.x)
-- **Security & Cryptography:** JWT (JsonWebToken), bcryptjs
-- **Logging:** Morgan
+Fitness applications can help users record their workouts, but simply storing workout data does not always provide personalized guidance.
 
----
+FitSense AI combines workout tracking with Generative AI to help users understand their fitness activity and receive personalized recommendations based on their goals and experience.
 
-## 📁 MVC Architecture
-```text
-FitTrack/
+The system provides a secure REST API that allows users to:
+
+Create and manage their accounts
+Authenticate securely using JWT
+Record workout activities
+View and search workout history
+Update and delete workouts
+Get AI-powered workout recommendations
+Get AI-generated fitness insights
+🎯 Problem Statement
+
+Many fitness tracking systems primarily focus on recording workout information.
+
+Users may still need personalized guidance to understand their workout patterns and decide what type of activities may be suitable for their fitness goals and experience.
+
+FitSense AI addresses this problem by combining fitness tracking with Generative AI.
+
+💡 Proposed Solution
+
+FitSense AI provides a centralized backend API that connects:
+
+User → REST API → Authentication & Validation → Workout Management → MongoDB → Google Gemini AI → Personalized Fitness Response
+
+The system securely stores workout data and uses AI to generate personalized recommendations and fitness insights.
+
+✨ Key Features
+🔐 User Authentication
+User registration
+Secure password hashing using bcrypt
+User login
+JWT-based authentication
+Protected API routes
+User profile retrieval
+🏃 Workout Management
+
+Users can:
+
+Add workouts
+View all workouts
+View a specific workout
+Update workout details
+Delete workouts
+Search workouts
+
+Each workout contains:
+
+Workout name
+Category
+Duration
+Calories burned
+Workout date
+🔍 Workout Search
+
+Users can search workouts using workout-related information.
+
+Example:
+
+GET /api/workouts/search?q=running
+
+🧠 AI Workout Recommendation
+
+FitSense AI integrates Google Gemini AI to generate personalized workout recommendations.
+
+The recommendation system uses:
+
+Age
+Fitness goal
+Experience level
+Example Request
+{
+  "age": 22,
+  "fitnessGoal": "Weight Loss",
+  "experience": "Beginner"
+}
+
+The system generates a personalized workout recommendation based on the provided fitness information.
+
+📊 AI Fitness Insights
+
+The application can analyze workout statistics and generate AI-powered fitness insights.
+
+The AI receives information such as:
+
+Total workouts
+Average workout duration
+Total calories burned
+Example Request
+{
+  "totalWorkouts": 18,
+  "averageDuration": 45,
+  "totalCaloriesBurned": 6200
+}
+
+The AI generates:
+
+Performance observations
+Suggestions
+Motivation
+Fitness summary
+🏗️ System Architecture
+                    ┌──────────────────────┐
+                    │        User          │
+                    │  Postman / Frontend  │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │     Express.js       │
+                    │       REST API       │
+                    └──────────┬───────────┘
+                               │
+                    ┌──────────▼───────────┐
+                    │   JWT Middleware     │
+                    │    Authentication    │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │     Controllers      │
+                    └──────────┬───────────┘
+                               │
+                ┌──────────────┴──────────────┐
+                │                             │
+                ▼                             ▼
+       ┌─────────────────┐          ┌─────────────────┐
+       │     MongoDB     │          │   Gemini AI     │
+       │                 │          │                 │
+       │ Users           │          │ Recommendations │
+       │ Workouts        │          │ Insights        │
+       └─────────────────┘          └─────────────────┘
+🧠 AI Workflow
+User Fitness Information
+          │
+          ▼
+    REST API Request
+          │
+          ▼
+   JWT Authentication
+          │
+          ▼
+    AI Controller
+          │
+          ▼
+    Gemini Service
+          │
+          ▼
+    Google Gemini AI
+          │
+          ▼
+ Personalized Response
+          │
+          ▼
+        User
+🛠️ Technology Stack
+Technology	Purpose
+Node.js	Backend runtime
+Express.js	REST API framework
+MongoDB	Database
+Mongoose	MongoDB ODM
+Google Gemini AI	Generative AI
+JWT	Authentication
+bcryptjs	Password hashing
+Morgan	HTTP request logging
+Postman	API testing
+Git & GitHub	Version control
+📁 Project Structure
+fitsense-ai/
+│
 ├── src/
-│   ├── config/          # Database configuration settings
+│   ├── config/
 │   │   └── db.js
-│   ├── controllers/     # Route controller logic
+│   │
+│   ├── controllers/
 │   │   ├── authController.js
 │   │   ├── workoutController.js
 │   │   └── aiController.js
-│   ├── middleware/      # JWT guards & centralized error handling
+│   │
+│   ├── middleware/
 │   │   ├── auth.js
 │   │   └── errorHandler.js
-│   ├── models/          # MongoDB Mongoose schemas
+│   │
+│   ├── models/
 │   │   ├── User.js
 │   │   └── Workout.js
-│   ├── routes/          # Express route definitions
+│   │
+│   ├── routes/
 │   │   ├── authRoutes.js
 │   │   ├── workoutRoutes.js
 │   │   ├── aiRoutes.js
 │   │   └── index.js
-│   ├── services/        # Service wrappers (Google Gemini SDK)
+│   │
+│   ├── services/
 │   │   └── geminiService.js
-│   └── app.js           # Express App configuration
-├── .env                 # Environment config (gitignored)
-├── .env.example         # Template env configuration
+│   │
+│   ├── app.js
+│   └── server.js
+│
+├── postman/
+├── .env.example
 ├── .gitignore
 ├── package.json
-└── FitTrack.postman_collection.json  # Importable Postman tests
-```
+├── package-lock.json
+├── README.md
+└── FitTrack.postman_collection.json
+🚀 Getting Started
+1. Prerequisites
 
----
+Make sure the following are installed:
 
-## 🚀 Getting Started
-
-### 1. Prerequisites
-- **Node.js** (v20 or higher recommended)
-- **MongoDB** (Local instance or MongoDB Atlas Cloud URL)
-- **Google Gemini API Key** (Get one from [Google AI Studio](https://aistudio.google.com/))
-
-### 2. Installation
-Clone or navigate to the project directory and run:
-```bash
+Node.js
+npm
+MongoDB
+Git
+Postman
+Google Gemini API Key
+2. Clone the Repository
+git clone https://github.com/bsccsaisanthosh-cmyk/fitsense-ai.git
+cd fitsense-ai
+3. Install Dependencies
 npm install
-```
+4. Configure Environment Variables
 
-### 3. Configuration Setup
-Create a `.env` file in the root directory based on the `.env.example` template:
-```env
+Create a .env file in the project root.
+
+Use .env.example as a reference.
+
 PORT=5000
-MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/fittrack
-JWT_SECRET=your_jwt_secret_key_here
-GEMINI_API_KEY=your_google_gemini_api_key_here
-```
+MONGO_URI=mongodb://localhost:27017/fittrack
+JWT_SECRET=your_jwt_secret
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_MODEL=gemini-3.6-flash
+⚠️ Security
 
-### 4. Running the Server
-Start the development server with automatic file reload:
-```bash
-npm run dev
-```
-Or start in production mode:
-```bash
+Never upload the .env file to GitHub.
+
+The .env file is excluded using .gitignore.
+
+▶️ Running the Application
+
+Start the server using:
+
 npm start
-```
 
----
+The server runs on:
 
-## 🛠️ API Specifications & Reference
+http://localhost:5000
 
-### 🔐 Feature 1: Authentication
+🩺 API Health Check
 
-#### **Register User**
-* **URL:** `/api/auth/register`
-* **Method:** `POST`
-* **Auth Required:** No
-* **Request Body:**
-  ```json
-  {
-    "name": "John Doe",
-    "email": "john@gmail.com",
-    "password": "123456"
-  }
-  ```
-* **Response (201 Created):**
-  ```json
-  {
-    "success": true,
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "user": {
-      "id": "60d0fe2c5f1b2c001f3e42aa",
-      "name": "John Doe",
-      "email": "john@gmail.com"
-    }
-  }
-  ```
+Open:
 
-#### **Login User**
-* **URL:** `/api/auth/login`
-* **Method:** `POST`
-* **Auth Required:** No
-* **Request Body:**
-  ```json
-  {
-    "email": "john@gmail.com",
-    "password": "123456"
-  }
-  ```
-* **Response (200 OK):**
-  ```json
-  {
-    "success": true,
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "user": {
-      "id": "60d0fe2c5f1b2c001f3e42aa",
-      "name": "John Doe",
-      "email": "john@gmail.com"
-    }
-  }
-  ```
+http://localhost:5000
 
-#### **User Profile**
-* **URL:** `/api/auth/profile`
-* **Method:** `GET`
-* **Auth Required:** Yes (`Bearer <token>`)
-* **Response (200 OK):**
-  ```json
-  {
-    "success": true,
-    "user": {
-      "id": "60d0fe2c5f1b2c001f3e42aa",
-      "name": "John Doe",
-      "email": "john@gmail.com"
-    }
-  }
-  ```
+Expected response:
 
----
+{
+  "success": true,
+  "message": "AI FitTrack API is running successfully",
+  "version": "1.0.0"
+}
+🔌 API Documentation
 
-### 🏃‍♂️ Feature 2: Workout Management (JWT Guarded)
-*All workouts are strictly scoped to the authenticated user. You cannot view, edit, or delete another user's workout.*
+Base URL:
 
-#### **Add Workout**
-* **URL:** `/api/workouts`
-* **Method:** `POST`
-* **Body:**
-  ```json
-  {
-    "workoutName": "Evening Jog",
-    "category": "Running",
-    "duration": 30,
-    "caloriesBurned": 350,
-    "workoutDate": "2026-06-26T18:00:00.000Z"
-  }
-  ```
-  *(Note: `workoutDate` is optional and defaults to current timestamp).*
-  *Supported Categories: `Cardio`, `Strength Training`, `Yoga`, `Running`, `Cycling`, `Walking`.*
+http://localhost:5000/api
 
-#### **View All Workouts**
-* **URL:** `/api/workouts`
-* **Method:** `GET`
-* **Response (200 OK):** Returns all workouts logged by the authenticated user sorted by date (descending).
+🔐 Authentication APIs
+Method	Endpoint	Authentication
+POST	/auth/register	Not Required
+POST	/auth/login	Not Required
+GET	/auth/profile	JWT Required
+Register User
 
-#### **View Workout by ID**
-* **URL:** `/api/workouts/:id`
-* **Method:** `GET`
+POST /api/auth/register
 
-#### **Update Workout**
-* **URL:** `/api/workouts/:id`
-* **Method:** `PUT`
-* **Body:** Fields to update (e.g. `{ "duration": 40 }`)
+Example request:
 
-#### **Delete Workout**
-* **URL:** `/api/workouts/:id`
-* **Method:** `DELETE`
+{
+  "name": "John Doe",
+  "email": "john@gmail.com",
+  "password": "123456"
+}
+Login User
 
----
+POST /api/auth/login
 
-### 🔍 Feature 3: Workout Search (JWT Guarded)
+Example request:
 
-#### **Search Workouts**
-* **URL:** `/api/workouts/search?q=<term>`
-* **Method:** `GET`
-* **Query Parameters:** `q` (Keyword for searching)
-* **Search capabilities:**
-  - Case-insensitive regex matches on **Workout Name** (e.g., `?q=jog`)
-  - Case-insensitive regex matches on **Category** (e.g., `?q=running`)
-  - Matches by specific **Date** if `q` matches a standard date pattern (e.g., `?q=2026-06-26`)
+{
+  "email": "john@gmail.com",
+  "password": "123456"
+}
+User Profile
 
----
+GET /api/auth/profile
 
-### 🧠 Feature 4: AI Workout Recommendation (JWT Guarded)
+Authentication:
 
-#### **Get AI Recommendation**
-* **URL:** `/api/ai/workout-recommendation`
-* **Method:** `POST`
-* **Request Body:**
-  ```json
-  {
-    "age": 22,
-    "fitnessGoal": "Weight Loss",
-    "experience": "Beginner"
-  }
-  ```
-* **Response (200 OK):**
-  ```json
-  {
-    "recommendation": "Start with 30 minutes of brisk walking, 20 minutes of bodyweight exercises, and stretching five days a week."
-  }
-  ```
+Authorization: Bearer <JWT_TOKEN>
 
----
+🏃 Workout APIs
 
-### 📊 Feature 5: AI Fitness Insights (JWT Guarded)
+All workout APIs require JWT authentication.
 
-#### **Get Fitness Insights**
-* **URL:** `/api/ai/fitness-insights`
-* **Method:** `POST`
-* **Request Body:**
-  ```json
-  {
-    "totalWorkouts": 18,
-    "averageDuration": 45,
-    "totalCaloriesBurned": 6200
-  }
-  ```
-* **Response (200 OK):**
-  ```json
-  {
-    "insight": "You have maintained a consistent workout routine. Increasing strength training sessions may help you achieve your fitness goals faster."
-  }
-  ```
+Method	Endpoint	Purpose
+POST	/workouts	Create workout
+GET	/workouts	Get all workouts
+GET	/workouts/:id	Get workout by ID
+PUT	/workouts/:id	Update workout
+DELETE	/workouts/:id	Delete workout
+GET	/workouts/search?q=	Search workouts
+Create Workout
 
----
+POST /api/workouts
 
-## 🧪 Postman Collection Setup
-An importable Postman collection is included in the project root: `FitTrack.postman_collection.json`.
+Example request:
 
-**Features of the Postman Collection:**
-1. Predefined endpoints organized by feature categories.
-2. Auto-evaluating Test Scripts: When you trigger a **Register** or **Login** request, the returned token is automatically stored in a collection variable named `jwt_token`.
-3. Auto-updating IDs: When you successfully run **Add Workout**, the generated ID is saved into `workout_id` to automatically authorize subsequent Retrieve/Update/Delete tests.
-4. Bearer Authentication is dynamically inherited from the collection variables.
+{
+  "workoutName": "Morning Running",
+  "category": "Running",
+  "duration": 35,
+  "caloriesBurned": 400,
+  "workoutDate": "2026-06-26T18:00:00.000Z"
+}
+🤖 AI APIs
+AI Workout Recommendation
+
+POST /api/ai/workout-recommendation
+
+Example request:
+
+{
+  "age": 22,
+  "fitnessGoal": "Weight Loss",
+  "experience": "Beginner"
+}
+
+Purpose:
+Generates a personalized workout recommendation using Google Gemini AI.
+
+AI Fitness Insights
+
+POST /api/ai/fitness-insights
+
+Example request:
+
+{
+  "totalWorkouts": 18,
+  "averageDuration": 45,
+  "totalCaloriesBurned": 6200
+}
+
+Purpose:
+Analyzes workout statistics and generates AI-powered fitness insights.
+
+🔒 Security
+
+FitSense AI implements:
+
+JWT authentication
+bcrypt password hashing
+Protected API routes
+User-specific workout access
+Environment variables for secrets
+Centralized error handling
+Input validation
+.env protection using .gitignore
+🧪 Postman API Testing
+
+The project includes a Postman collection:
+
+FitTrack.postman_collection.json
+
+The collection contains:
+
+Authentication APIs
+Workout APIs
+Workout search
+AI workout recommendation
+AI fitness insights
+
+The JWT token can be used for authenticated requests.
+
+✅ Tested Features
+ User Registration
+ User Login
+ JWT Authentication
+ User Profile
+ Create Workout
+ Get All Workouts
+ Get Workout by ID
+ Update Workout
+ Delete Workout
+ Workout Search
+ AI Workout Recommendation
+ AI Fitness Insights
+ MongoDB Connection
+ Google Gemini AI Integration
+ GitHub Repository
+📸 Project Screenshots
+
+Screenshots can be added to demonstrate the working project.
+
+Recommended screenshots:
+
+User Registration
+User Login
+User Profile
+Create Workout
+Get Workouts
+Search Workout
+AI Workout Recommendation
+AI Fitness Insights
+🎓 Naan Mudhalvan Project
+Project Information
+
+Project Name: FitSense AI
+
+Project Title: Personalized Fitness Recommendations Powered by AI
+
+Program: Naan Mudhalvan
+
+Domain: Artificial Intelligence / Backend Development
+
+Institution: University of Madras
+
+Course: BSc Computer Science with Artificial Intelligence
+
+🎯 Project Objectives
+
+The main objectives of FitSense AI are:
+
+Develop a secure REST API for fitness tracking.
+Implement user authentication using JWT.
+Store workout information using MongoDB.
+Implement CRUD operations for workout management.
+Provide workout search functionality.
+Integrate Google Gemini AI.
+Generate personalized workout recommendations.
+Generate AI-powered fitness insights.
+Apply MVC architecture.
+Test REST APIs using Postman.
+📚 Learning Outcomes
+
+Through this project, the team gained practical experience in:
+
+REST API development
+Node.js
+Express.js
+MongoDB
+Mongoose
+JWT authentication
+Password hashing
+MVC architecture
+Generative AI
+Google Gemini API
+API testing
+Git
+GitHub
+Environment configuration
+👥 Project Team
+
+This project was developed as a team project under the Naan Mudhalvan program.
+
+Name	Role
+Santhosh C	👑 Team Leader
+Tharun M.P	Team Member
+Rajiv P	Team Member
+Logesh I	Team Member
+👑 Team Leader
+Santhosh C
+
+Course: BSc Computer Science with Artificial Intelligence
+
+University: University of Madras
+
+Role: Team Leader
+
+GitHub:
+https://github.com/bsccsaisanthosh-cmyk
+
+🔮 Future Enhancements
+
+Future versions of FitSense AI can include:
+
+Fitness dashboard
+Workout progress charts
+Weekly and monthly reports
+Exercise library
+Workout reminders
+Personalized nutrition recommendations
+Mobile application
+AI-based progress prediction
+Admin dashboard
+Cloud deployment
+Real-time fitness tracking
+📄 Project Purpose
+
+This project was developed for educational purposes as part of the Naan Mudhalvan program.
+
+The project demonstrates the practical implementation of:
+
+Backend Development + Database Management + Authentication + Generative AI
+
+⭐ FitSense AI
+
+Track your workouts. Understand your progress. Get AI-powered recommendations.
+
+Built with ❤️ by the FitSense AI Team
